@@ -1,0 +1,120 @@
+<!--
+@license
+Copyright (c) 2016 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../bower_components/paper-checkbox/paper-checkbox.html">
+<link rel="import" href="../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
+<link rel="import" href="shared-styles.html">
+<script src="../bower_components/underscore/underscore.js"></script>
+<script src="../infra/repo.js"></script>
+
+
+<dom-module id="events-view">
+  <template>
+    <style include="shared-styles">
+      :host {
+        padding: 10px;
+        display: block;
+      }
+    </style>
+
+    <div class="card">
+      <div class="container">
+        <h1>Events</h1>
+        <paper-icon-button class="button-add-event" icon="add" title="Add new event" raised on-click="openAddEventModal" >Add new event</paper-icon-button>
+      </div>
+       <template is="dom-repeat" items="{{eventsList}}">
+        <div class="container">
+          <template is="dom-if" if="[[!_isModeEdit(item.mode)]]" restamp>
+            <div class="readonly-view-container">
+              <span>[[item.name]]</span>
+            </div>
+          </template>
+          <template is="dom-if" if="[[_isModeEdit(item.mode)]]" restamp>
+            <div class="edit-view-container">
+              <paper-input id="inp" value={{item.name}} label="Event Description" ></paper-input>
+            </div>
+          </template>
+          <div class="button-container">
+            <div class="edit-mode-button-container" hidden$="[[!_isModeEdit(item.mode)]]">
+              <paper-icon-button icon="check" title="Save" on-click="_editcomplete">edit complete</paper-icon-button>
+              <paper-icon-button icon="cancel" title="Cancel" on-click="_cancelEditItem">cancel</paper-icon-button>  
+            </div>
+            <div class="view-mode-button-container" hidden$="[[_isModeEdit(item.mode)]]">
+              <paper-icon-button icon="delete" title="Delete" on-click="_deleteItem">delete</paper-icon-button>
+              <paper-icon-button icon="create" title="Edit" on-click="_editItem">edit</paper-icon-button>
+            </div>
+           </div>
+        </div>
+      </template>
+
+      <paper-dialog id="addEventModal" >
+        <h2>Add New Event Information</h2>
+        <paper-input id="inpNewEventName" value={{newParty.name}} 
+          required 
+          label="Event Description" 
+          error-message="Please enter some text." ></paper-input>
+        <div class="buttons">
+          <paper-button dialog-dismiss>Cancel</paper-button>
+          <paper-button dialog-confirm on-click="_additem"  autofocus>Ok</paper-button>
+        </div>
+      </paper-dialog>
+    </div>
+  </template>
+
+  <script>
+    Polymer({
+      is: 'events-view',
+      properties: {
+        eventsList: {
+          type: Array,
+          value: function() {
+            return repo.events;
+          }
+        },
+        newParty: {
+          type: Object,
+          value: {
+            name:'',
+            id: '',
+            mode: ''
+          }
+        }
+      },
+      _deleteItem: function(e) {
+        var item = e.model.item;  
+        this.eventsList = _.without(this.eventsList,item);
+      },
+      _editItem: function(e) {
+        e.model.set('item.mode', 'edit'); 
+      },
+      _editcomplete: function(e) {
+        e.model.set('item.mode', '');
+      },
+      _isModeEdit: function(mode) {
+        return mode ==='edit';
+      },
+      _cancelEditItem: function(e){
+        e.model.set('item.mode', '');
+      },
+      _additem: function(e) {
+        this.newParty.id = this.eventsList.length; 
+        this.push('eventsList',this.newParty)
+      },
+      openAddEventModal: function () {
+        this.$.addEventModal.open();
+      }
+     });
+  </script>
+</dom-module>
