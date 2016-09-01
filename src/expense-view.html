@@ -14,7 +14,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../bower_components/paper-checkbox/paper-checkbox.html">
 <link rel="import" href="../bower_components/paper-input/paper-input.html">
 <link rel="import" href="../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../bower_components/paper-dialog-scrollable/paper-dialog-scrollable.html">
 <link rel="import" href="../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../bower_components/paper-listbox/paper-listbox.html">
+<link rel="import" href="../bower_components/paper-item/paper-item.html">
+
+
 <link rel="import" href="shared-styles.html">
 <script src="../bower_components/underscore/underscore.js"></script>
 <script src="../infra/repo.js"></script>
@@ -45,6 +50,19 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         @apply(--layout-horizontal);
         width: 90%;
       }
+      .modal {
+         @apply(--layout-vertical);
+      }
+      .expense-by {
+        width: 400px;
+      }
+      .expense-for {
+        width: 400px;
+      }
+      .list-box {
+        height:150px;
+        overflow-y: scroll;
+      }
     </style>
 
     <div class="card">
@@ -65,7 +83,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
        <template is="dom-repeat" items="{{expensesList}}">
         <div class="container">
           <template is="dom-if" if="[[!_isModeEdit(item.mode)]]" restamp>
-            <div class="readonly-view-container expenses-container">
+            <div class="readonly-view-container expenses-container" on-click="_editExpenseRow">
               <div class="description">[[item.description]]</div>
               <div class="amount">[[item.amount]]</div>
               <div class="expense-by">[[item.expenseBy]]</div>
@@ -90,14 +108,38 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         </div>
       </template>
 
-      <paper-dialog id="openAddModal" >
-        <h2>Add New Expense</h2>
-        <paper-input id="inpNewEventName" value={{newParty.name}} 
+      <paper-dialog id="modal" class="modal" >
+        <h2>[[_getModalTitle()]]</h2>
+        <div class="expense-input">
+          <paper-input value={{expenseBeingEdited.description}} 
+            required 
+            label="Expense Description" 
+            error-message="Please enter expense description." ></paper-input>
+        </div>
+        <div class="expense-input">
+        <paper-input value={{expenseBeingEdited.amount}} 
           required 
-          label="Expense Description" 
-          error-message="Please enter some text." ></paper-input>
+          label="Expense Amount" 
+          error-message="Please enter expense amount." ></paper-input>
+        </div>
+        <div class="expense-by">
+          <label for="exoenseByUser"> Expense By </label> 
+              <paper-listbox id="exoenseByUser" class="list-box" selected="{{expenseBeingEdited.expenseBy}}">
+                <template is="dom-repeat" items="[[memberList]]">
+                  <paper-item>[[item.name]]</paper-item>
+                </template>
+              </paper-listbox>
+        </div>
+        <div class="expense-for">
+          <label for="exoenseByUser"> Expense For (can select more than 1) </label> 
+              <paper-listbox id="exoenseByUser" class="list-box" multi>
+                <template is="dom-repeat" items="[[memberList]]">
+                  <paper-item>[[item.name]]</paper-item>
+                </template>
+              </paper-listbox>
+        </div>
         <div class="buttons">
-          <paper-button dialog-dismiss>Cancel</paper-button>
+          <paper-button dialog-dismiss on-click="_cancelEdit">Cancel</paper-button>
           <paper-button dialog-confirm on-click="_additem"  autofocus>Ok</paper-button>
         </div>
       </paper-dialog>
@@ -125,6 +167,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             description: '',
             mode:''
           }
+        },
+        expenseBeingEdited: {
+          type: Object,
+          value: null
+        },
+        memberList: {
+          type: Array,
+          value: function() {
+            return repo.members;
+          }
         }
       },
       _deleteItem: function(e) {
@@ -143,13 +195,25 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       _cancelEditItem: function(e){
         e.model.set('item.mode', '');
       },
+      _cancelEdit: function() {
+        expenseBeingEdited = null;
+      },
       _additem: function(e) {
         this.newParty.id = this.expensesList.length; 
         this.push('expensesList',this.newParty)
+        this.expenseBeingEdited.mode = 'add';
       },
-      openAddEventModal: function () {
-        this.$.addEventModal.open();
+      openAddModal: function () {
+        this.$.modal.open();
+      },
+      _editExpenseRow: function(e) {
+        this.expenseBeingEdited = e.model.item;
+        this.expenseBeingEdited.mode = 'edit';
+        this.openAddModal();
+      },
+      _getModalTitle: function(e) {
+        return (this.expenseBeingEdited && this.expenseBeingEdited.mode === 'edit') ?  "Edit Expense" : "Add Expense";
       }
-     });
+      });
   </script>
 </dom-module>

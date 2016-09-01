@@ -1,6 +1,9 @@
 var  repo ={
         members: [ {name: 'John', id:1, mode: ''},
-                    {name: 'Simon', id:2, mode: ''}],
+                    {name: 'Simon', id:2, mode: ''},
+                    {name: 'Sam', id:3, mode: ''},
+                    {name: 'Jane', id:4, mode: ''}
+                    ],
         events: [{name: 'Johns BirthDay', id:1, mode: '' }],
         expenses: [{amount: 20, 
             expenseBy: 1,
