@@ -5,7 +5,8 @@ var  repo ={
                     {name: 'Jane', id:4, mode: ''}
                     ],
         events: [{name: 'Johns BirthDay', id:1, mode: '' }],
-        expenses: [{amount: 20, 
+        expenses: [{id: 1,
+            amount: 20, 
             expenseBy: 1,
             expenseByName: 'John',
             expenseFor: [1,2],
