@@ -33,6 +33,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         <h1>Members</h1>
         <paper-icon-button class="button-add" icon="add" title="Add new member" raised on-click="openModal" >Add new member</paper-icon-button>
       </div>
+       <template is="dom-if" if="[[membersList.length > 0]]">
+        <div class="container">
+          <div class="readonly-view-container"><h3> Member Name </h3></div>
+          <div class="button-container"></div>
+      </template>
        <template is="dom-repeat" items="{{membersList}}">
         <div class="container">
           <template is="dom-if" if="[[!_isModeEdit(item.mode)]]" restamp>

@@ -34,6 +34,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         <h1>Events</h1>
         <paper-icon-button class="button-add" icon="add" title="Add new event" raised on-click="openAddEventModal" >Add new event</paper-icon-button>
       </div>
+      <template is="dom-if" if="[[eventsList.length > 0]]">
+        <div class="container">
+          <div class="readonly-view-container"><h3> Event Name </h3></div>
+          <div class="button-container"></div>
+      </template>
        <template is="dom-repeat" items="{{eventsList}}">
         <div class="container">
           <template is="dom-if" if="[[!_isModeEdit(item.mode)]]" restamp>
