@@ -20,6 +20,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../bower_components/iron-pages/iron-pages.html">
 <link rel="import" href="../bower_components/iron-selector/iron-selector.html">
 <link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../bower_components/iron-signals/iron-signals.html">
 <link rel="import" href="my-icons.html">
 
 <dom-module id="my-app">
@@ -62,7 +63,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         font-weight: bold;
       }
     </style>
-
+    <iron-signals on-iron-signal-change-view="_handleChangeView"></iron-signals>
     <app-location route="{{route}}"></app-location>
     <app-route
         route="{{route}}"
@@ -75,7 +76,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       <app-drawer>
         <app-toolbar>Menu</app-toolbar>
         <iron-selector selected="[[page]]" attr-for-selected="name" class="drawer-list" role="navigation">
-          <a name="events" href="/events-view">Events</a>
+          <a name="events" href="/events-view/">Events</a>
           <a name="members" href="/member-view">Members</a>
           <a name="expenses" href="/expense-view">Expense</a>
         </iron-selector>
@@ -83,7 +84,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       <!-- Main content -->
       <app-header-layout has-scrolling-region>
-
         <app-header condenses reveals effects="waterfall">
           <app-toolbar>
             <paper-icon-button icon="menu" drawer-toggle></paper-icon-button>
@@ -96,12 +96,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             attr-for-selected="name"
             fallback-selection="view404"
             role="main">
-          <events-view name="events-view"></events-view>
+          <events-view name="events-view" filter="[[currentEvent]]"></events-view>
           <member-view name="member-view"></member-view>
-          <expense-view name="expense-view"></expense-view>
+          <expense-view name="expense-view" filter="[[currentEvent]]"></expense-view>
           <my-view404 name="view404"></my-view404>
         </iron-pages>
       </app-header-layout>
+      
     </app-drawer-layout>
   </template>
 
@@ -116,6 +117,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     type: String,
                     reflectToAttribute: true,
                     observer: '_pageChanged'
+                },
+                currentEvent: {
+                    type: String
                 }
             },
 
@@ -136,6 +140,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
             _showPage404: function () {
                 this.page = 'my-view404';
+            },
+
+            _handleChangeView: function (e) {
+                if (e && e.detail) {
+                    this.currentEvent = e.detail.data;
+                    this.set('route.path', e.detail.viewName + '/' + e.detail.data);
+                }
             }
         });
     })();

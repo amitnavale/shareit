@@ -88,7 +88,7 @@
                 }
             },
             _deleteItem: function (e) {
-                var item = e.model.item;  
+                var item = e.model.item;
                 this.membersList = _.without(this.membersList, item);
             },
             _editItem: function (e) {
@@ -97,7 +97,7 @@
             _editcomplete: function (e) {
                 e.model.set('item.mode', '');
             },
-            _isModeEdit: function () {
+            _isModeEdit: function (mode) {
                 return mode === 'edit';
             },
             _cancelEditItem: function (e){

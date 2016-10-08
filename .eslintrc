@@ -43,6 +43,8 @@
         "space-in-parens":["warn","never"]
     },
     "globals": {
-        "Polymer": true
+        "Polymer": true,
+        "repo": true,
+        "_": false
     }
 }

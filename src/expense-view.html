@@ -73,7 +73,7 @@
        <template is="dom-repeat" items="{{expensesList}}">
         <div class="container">
           <div class="readonly-view-container expenses-container" on-click="_editExpenseRow">
-            <div class="description">[[item.description]]</div>
+            <div class="description" on-click="loadEvent">[[item.description]]</div>
             <div class="amount">[[item.amount]]</div>
             <div class="expense-by">[[item.expenseBy]]</div>
             <div class="expense-for">[[item.expenseFor]]</div>
@@ -152,7 +152,23 @@
                     value: function () {
                         return repo.members;
                     }
+                },
+                filter: {
+                    type: String
                 }
+            },
+            
+            observers: ['_onFilterChange(filter)'],
+
+            _onFilterChange: function (filter) {
+                this.expensesList = _.filter(this.expensesList, function (item) {
+                    return item.eventId === filter;
+                });
+            },
+
+            loadEvent: function (e) {
+                var item = e.model.item;
+                this.fire('iron-signal', { name: 'change-view', data: { viewName: 'events-view', data: item.id } });
             },
             _deleteItem: function (e) {
                 var item = e.model.item;
