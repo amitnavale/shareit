@@ -78,47 +78,49 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   </template>
 
   <script>
-    Polymer({
-      is: 'events-view',
-      properties: {
-        eventsList: {
-          type: Array,
-          value: function() {
-            return repo.events;
-          }
-        },
-        newParty: {
-          type: Object,
-          value: {
-            name:'',
-            id: '',
-            mode: ''
-          }
-        }
-      },
-      _deleteItem: function(e) {
-        var item = e.model.item;  
-        this.eventsList = _.without(this.eventsList,item);
-      },
-      _editItem: function(e) {
-        e.model.set('item.mode', 'edit'); 
-      },
-      _editcomplete: function(e) {
-        e.model.set('item.mode', '');
-      },
-      _isModeEdit: function(mode) {
-        return mode ==='edit';
-      },
-      _cancelEditItem: function(e){
-        e.model.set('item.mode', '');
-      },
-      _additem: function(e) {
-        this.newParty.id = this.eventsList.length; 
-        this.push('eventsList',this.newParty)
-      },
-      openAddEventModal: function () {
-        this.$.addEventModal.open();
-      }
-     });
+    (function () {
+        Polymer({
+            is: 'events-view',
+            properties: {
+                eventsList: {
+                    type: Array,
+                    value: function () {
+                      return repo.events;
+                    }
+                },
+                newParty: {
+                    type: Object,
+                    value: {
+                        name: '',
+                        id: '',
+                        mode: ''
+                    }
+                }
+            },
+            _deleteItem: function (e) {
+                var item = e.model.item;  
+                this.eventsList = _.without(this.eventsList, item);
+            },
+            _editItem: function (e) {
+                e.model.set('item.mode', 'edit'); 
+            },
+            _editcomplete: function (e) {
+                e.model.set('item.mode', '');
+            },
+            _isModeEdit: function (mode) {
+                return mode === 'edit';
+            },
+            _cancelEditItem: function (e) {
+                e.model.set('item.mode', '');
+            },
+            _additem: function () {
+                this.newParty.id = this.eventsList.length;
+                this.push('eventsList',this.newParty);
+            },
+            openAddEventModal: function () {
+                this.$.addEventModal.open();
+            }
+        });
+    })();
   </script>
 </dom-module>

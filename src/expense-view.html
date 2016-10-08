@@ -1,13 +1,3 @@
-<!--
-@license
-Copyright (c) 2016 The Polymer Project Authors. All rights reserved.
-This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
-The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
-The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
-Code distributed by Google as part of the polymer project is also
-subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
--->
-
 <link rel="import" href="../bower_components/polymer/polymer.html">
 <link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../bower_components/iron-icons/iron-icons.html">
@@ -70,7 +60,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         <h1>Expenses</h1>
         <paper-icon-button class="button-add" icon="add" title="Add new expense" raised on-click="openAddModal" >Add new expense</paper-icon-button>
       </div>
-      <template is="dom-if" if="[[expensesList.length > 0]]">
+      <template is="dom-if" if="_isExpensePresent(expenseList)">
         <div class="container">
           <div class="readonly-view-container expenses-container">
             <div class="description"><h3> Description </h3></div>
@@ -120,7 +110,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         </div>
         <div class="expense-for">
           <label for="expenseForUser"> Expense For (can select more than 1) </label> 
-              <paper-listbox id="expenseForUser" class="list-box" multi>
+              <paper-listbox id="expenseForUser" class="list-box" multi selected="{{expenseBeingEdited.expenseBy}}">
                 <template is="dom-repeat" items="[[memberList]]">
                   <paper-item>[[item.name]]</paper-item>
                 </template>
@@ -135,80 +125,78 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   </template>
 
   <script>
-    Polymer({
-      is: 'expense-view',
-      properties: {
-        expensesList: {
-          type: Array,
-          value: function() {
-            return repo.expenses;
-          }
-        },
-        expenseBeingEdited: {
-          type: Object,
-          value: {
-            amount: 0, 
-            expenseBy: 0,
-            expenseByName: '',
-            expenseFor: [],
-            expenseForName: [],
-            description: '',
-            mode:''
-          }
-        },
-        memberList: {
-          type: Array,
-          value: function() {
-            return repo.members;
-          }
-        }
-      },
-      _deleteItem: function(e) {
-        var item = e.model.item;  
-        this.expensesList = _.without(this.expensesList,item);
-      },
-      _editItem: function(e) {
-        this._editExpenseRow(e);
-      },
-      _cancelEdit: function() {
-        this.expenseBeingEdited.mode = 'add';
-      },
-      _additem: function(e) {
-        if(this.expenseBeingEdited && this.expenseBeingEdited.mode === 'edit') {
-          for (var i=0; i< this.expensesList.length; i++) {
-            if(this.expensesList[i].id === this.expenseBeingEdited.id) {
-              // this.expensesList[i].set('amount', this.expenseBeingEdited.amount);
-              // this.expensesList[i].set('description', this.expenseBeingEdited.description);
-              // this.expensesList[i].set('expenseBy' , this.expenseBeingEdited.expenseBy);
-              // this.expensesList[i].set('expenseFor' , this.expenseBeingEdited.expenseFor);
-              // this.expenseBeingEdited.set('mode','');
-              this.expensesList[i].amount = this.expenseBeingEdited.amount;
-              this.expensesList[i].description = this.expenseBeingEdited.description;
-              this.expensesList[i].expenseBy = this.expenseBeingEdited.expenseBy;
-              this.expensesList[i].expenseFor = this.expenseBeingEdited.expenseFor;
-              this.expenseBeingEdited.mode = '';
-              break; 
+    (function () {
+        Polymer({
+            is: 'expense-view',
+            properties: {
+                expensesList: {
+                    type: Array,
+                    value: function () {
+                        return repo.expenses;
+                    }
+                },
+                expenseBeingEdited: {
+                    type: Object,
+                    value: {
+                        amount: 0, 
+                        expenseBy: 0,
+                        expenseByName: '',
+                        expenseFor: [],
+                        expenseForName: [],
+                        description: '',
+                        mode: ''
+                    }
+                },
+                memberList: {
+                    type: Array,
+                    value: function () {
+                        return repo.members;
+                    }
+                }
+            },
+            _deleteItem: function (e) {
+                var item = e.model.item;
+                this.expensesList = _.without(this.expensesList, item);
+            },
+            _editItem: function (e) {
+                this._editExpenseRow(e);
+            },
+            _cancelEdit: function () {
+                this.expenseBeingEdited.mode = 'add';
+            },
+            _isExpensePresent: function (expenseList) {
+                return (expenseList && expenseList.length > 0);
+            },
+            _additem: function () {
+                if (this.expenseBeingEdited && this.expenseBeingEdited.mode === 'edit') {
+                    for (var i = 0; i < this.expensesList.length; i++) {
+                        if (this.expensesList[i].id === this.expenseBeingEdited.id) {
+                            this.set('expensesList.' + String(i) + '.amount', this.expenseBeingEdited.amount);
+                            this.set('expensesList.' + String(i) + '.description', this.expenseBeingEdited.description);
+                            this.set('expensesList.' + String(i) + '.expenseBy', this.expenseBeingEdited.expenseBy);
+                            this.set('expensesList.' + String(i) + '.expenseFor', this.expenseBeingEdited.expenseFor);
+                            this.set('expensesList.' + String(i) + '.mode', '');
+                            break;
+                        }
+                    }
+                } else {
+                    this.expenseBeingEdited.id = this.expensesList.length; 
+                    this.expenseBeingEdited.mode = '';
+                    this.push('expensesList', this.expenseBeingEdited);
+                }
+            },
+            openAddModal: function () {
+                this.$.modal.open();
+            },
+            _editExpenseRow: function (e) {
+                this.expenseBeingEdited = e.model.item;
+                this.expenseBeingEdited.mode = 'edit';
+                this.openAddModal();
+            },
+            _getModalTitle: function () {
+                return (this.expenseBeingEdited && this.expenseBeingEdited.mode === 'edit') ?  'Edit Expense' : 'Add Expense';
             }
-          }
-        }
-        else {
-          this.expenseBeingEdited.id = this.expensesList.length; 
-          this.expenseBeingEdited.mode = ''; 
-          this.push('expensesList', this.expenseBeingEdited)
-        }
-        
-      },
-      openAddModal: function () {
-        this.$.modal.open();
-      },
-      _editExpenseRow: function(e) {
-        this.expenseBeingEdited = e.model.item;
-        this.expenseBeingEdited.mode = 'edit';
-        this.openAddModal();
-      },
-      _getModalTitle: function(e) {
-        return (this.expenseBeingEdited && this.expenseBeingEdited.mode === 'edit') ?  "Edit Expense" : "Add Expense";
-      }
-      });
+        });
+    })();
   </script>
 </dom-module>

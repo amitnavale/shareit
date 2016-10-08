@@ -106,35 +106,38 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   </template>
 
   <script>
-    Polymer({
-      is: 'my-app',
+    (function () {
+        'use strict';
+        Polymer({
+            is: 'my-app',
 
-      properties: {
-        page: {
-          type: String,
-          reflectToAttribute: true,
-          observer: '_pageChanged'
-        }
-      },
+            properties: {
+                page: {
+                    type: String,
+                    reflectToAttribute: true,
+                    observer: '_pageChanged'
+                }
+            },
 
-      observers: [
-        '_routePageChanged(routeData.page)'
-      ],
+            observers: [
+                '_routePageChanged(routeData.page)'
+            ],
 
-      _routePageChanged: function(page) {
-        this.page = page || 'events-view';
-      },
+            _routePageChanged: function (page) {
+                this.page = page || 'events-view';
+            },
 
-      _pageChanged: function(page) {
-        // Load page import on demand. Show 404 page if fails
-        var  resolvedPageUrl;
-        resolvedPageUrl = this.resolveUrl( page + '.html');
-        this.importHref(resolvedPageUrl, null, this._showPage404, true);
-      },
+            _pageChanged: function (page) {
+                // Load page import on demand. Show 404 page if fails
+                var  resolvedPageUrl;
+                resolvedPageUrl = this.resolveUrl(page + '.html');
+                this.importHref(resolvedPageUrl, null, this._showPage404, true);
+            },
 
-      _showPage404: function() {
-        this.page = 'my-view404';
-      }
-    });
+            _showPage404: function () {
+                this.page = 'my-view404';
+            }
+        });
+    })();
   </script>
 </dom-module>

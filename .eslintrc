@@ -1,0 +1,48 @@
+{
+    "env": {
+        "browser": true,
+        "mocha": true,
+        "node": true
+    },
+    "extends": "eslint:recommended",
+    "parserOptions": {
+        "sourceType": "module"
+    },
+    "plugins": [ "html"],
+    "settings": {
+       "html/indent": "tab"
+    },
+    "rules": {
+        "curly": ["error","all"],
+        "eqeqeq": ["error"],
+        "indent": [ "error",4, {"VariableDeclarator":1 , "SwitchCase":1}],
+        "linebreak-style": [
+            "error",
+            "unix"
+        ],
+        "quotes": [
+            "error",
+            "single"
+        ],
+        "semi": [
+            "error",
+            "always"
+        ],
+        "wrap-iife": ["error","any"],
+        "array-bracket-spacing": ["warn","never"],
+        "brace-style": ["warn","1tbs"],
+        "comma-spacing": ["warn", {"before":false, "after": true}],
+        "key-spacing": ["warn", {"beforeColon":false, "afterColon": true}],
+        "keyword-spacing":["warn"],
+        "no-multi-space":["warn"],
+        "no-trailing-spaces": ["warn", {"skipBlankLines": false}],
+        "quote-props": ["warn","as-needed"],
+        "space-before-blocks":["warn","always"],
+        "space-before-function-paren":["warn","always"],
+        "space-infix-ops":["warn"],
+        "space-in-parens":["warn","never"]
+    },
+    "globals": {
+        "Polymer": true
+    }
+}

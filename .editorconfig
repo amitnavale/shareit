@@ -1,0 +1,12 @@
+root = true
+
+[*]
+end_of_line = crlf
+indent_size = 4
+indent_style = space
+insert_final_newline = true
+trim_trailing-whitespace = true
+
+[*.md]
+trim_trailing-whitespace = false
+end_of_line = if
